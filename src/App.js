@@ -2,6 +2,7 @@
 import React from "react";
 import Login from "./login";
 import Upload from "./Upload";
+import Library from "./Library";
 
 const App = () => {
   return (
@@ -9,6 +10,7 @@ const App = () => {
       <h1>Bookishh</h1>
       <Login />
       <Upload/>
+      <Library />
     </div>
   );
 };
