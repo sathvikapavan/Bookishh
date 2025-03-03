@@ -1,6 +1,6 @@
 // src/Library.js
 import React, { useEffect, useState } from "react";
-import { storage, auth } from "./firebase";
+import { storage, auth } from "../firebase";
 import { ref, listAll, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom"; // Correct import
 
@@ -32,6 +32,11 @@ const Library = () => {
 
     fetchBooks();
   }, [navigate]);
+  // library.js
+function handleLogout() {
+    alert("Logged out successfully!");
+    window.location.href = "login.html";
+  }
 
   return (
     <div>

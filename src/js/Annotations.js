@@ -1,6 +1,6 @@
 // src/Annotations.js
 import React, { useState, useEffect } from "react";
-import { db, auth } from "./firebase";
+import { db, auth } from "../firebase";
 import {
   collection,
   addDoc,
@@ -111,6 +111,21 @@ const Annotations = () => {
       )
     );
   };
+  // annotations.js
+function handleAddAnnotation() {
+    const comment = prompt("Add a comment for the highlighted text:");
+    if (comment) {
+      const annotationsList = document.getElementById("annotationsList");
+      const newAnnotation = document.createElement("li");
+      newAnnotation.innerHTML = `<strong>"Sample Text"</strong>: ${comment}`;
+      annotationsList.appendChild(newAnnotation);
+    }
+  }
+  
+  function handleLogout() {
+    alert("Logged out successfully!");
+    window.location.href = "login.html";
+  }
 
   return (
     <div>

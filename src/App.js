@@ -1,9 +1,9 @@
 // src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./Login";
+import Login from "./login";
 import Upload from "./Upload";
-import Library from "./Library";
+import Library from "./js/Library";
 import Annotations from "./Annotations";
 import Notifications from "./Notifications"; // Add this
 

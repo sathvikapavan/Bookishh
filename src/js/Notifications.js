@@ -1,6 +1,6 @@
 // src/Notifications.js
 import React, { useState, useEffect } from "react";
-import { db, auth } from "./firebase";
+import { db, auth } from "../firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 const Notifications = () => {
@@ -23,6 +23,18 @@ const Notifications = () => {
       return () => unsubscribe();
     }
   }, [auth.currentUser]);
+  // notifications.js
+function markAsRead(button) {
+    const listItem = button.parentElement;
+    listItem.style.opacity = "0.6";
+    button.disabled = true;
+    button.textContent = "Read";
+  }
+  
+  function handleLogout() {
+    alert("Logged out successfully!");
+    window.location.href = "login.html";
+  }
 
   return (
     <div>

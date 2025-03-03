@@ -1,6 +1,6 @@
 // src/Login.js
 import React, { useState } from "react";
-import { auth } from "./firebase";
+import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom"; // Add this
 
@@ -19,6 +19,25 @@ const Login = () => {
       alert(`Error: ${error.message}`);
     }
   };
+  // login.js
+function handleLogin() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    alert(`Logged in as ${email}`);
+    window.location.href = "library.html";
+  }
+  
+  function handleSignup() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    alert(`Signed up as ${email}`);
+    window.location.href = "library.html";
+  }
+  
+  function handleLogout() {
+    alert("Logged out successfully!");
+    window.location.href = "login.html";
+  }
 
   return (
     <div>
