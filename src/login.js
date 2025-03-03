@@ -9,19 +9,23 @@ const Login = () => {
 
   const handleSignup = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("User registered:", userCredential.user);
       alert("User registered!");
     } catch (error) {
       console.error("Error signing up:", error.message);
+      alert(`Error: ${error.message}`);
     }
   };
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("User logged in:", userCredential.user);
       alert("Logged in!");
     } catch (error) {
       console.error("Error logging in:", error.message);
+      alert(`Error: ${error.message}`);
     }
   };
 
