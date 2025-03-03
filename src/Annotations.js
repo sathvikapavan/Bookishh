@@ -1,5 +1,7 @@
 // src/Annotations.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { db, auth } from "./firebase";
+import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
 
 const Annotations = () => {
   const [annotations, setAnnotations] = useState([]);
@@ -16,16 +18,42 @@ const Annotations = () => {
     }
   };
 
-  const handleAddAnnotation = () => {
-    if (selectedText) {
-      const newAnnotation = {
-        text: selectedText,
-        comment: prompt("Add a comment for the highlighted text:"),
-      };
-      setAnnotations([...annotations, newAnnotation]);
-      setSelectedText("");
+  const handleAddAnnotation = async () => {
+    if (selectedText && auth.currentUser) {
+      const comment = prompt("Add a comment for the highlighted text:");
+      if (comment) {
+        try {
+          await addDoc(collection(db, "annotations"), {
+            text: selectedText,
+            comment,
+            userId: auth.currentUser.uid,
+            createdAt: new Date(),
+          });
+          setSelectedText("");
+        } catch (error) {
+          console.error("Error adding annotation:", error);
+        }
+      }
     }
   };
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      const q = query(
+        collection(db, "annotations"),
+        where("userId", "==", auth.currentUser.uid)
+      );
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const annotationsList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAnnotations(annotationsList);
+      });
+
+      return () => unsubscribe();
+    }
+  }, [auth.currentUser]);
 
   return (
     <div>
@@ -43,8 +71,8 @@ const Annotations = () => {
       <div>
         <h3>Annotations</h3>
         <ul>
-          {annotations.map((annotation, index) => (
-            <li key={index}>
+          {annotations.map((annotation) => (
+            <li key={annotation.id}>
               <strong>"{annotation.text}"</strong>: {annotation.comment}
             </li>
           ))}
