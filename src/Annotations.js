@@ -1,11 +1,13 @@
 // src/Annotations.js
 import React, { useState, useEffect } from "react";
 import { db, auth } from "./firebase";
-import { collection, addDoc, query, where, onSnapshot } from "firebase/firestore";
+import { collection, addDoc, query, where, onSnapshot, doc, updateDoc } from "firebase/firestore";
 
 const Annotations = () => {
   const [annotations, setAnnotations] = useState([]);
   const [selectedText, setSelectedText] = useState("");
+  const [editingAnnotationId, setEditingAnnotationId] = useState(null);
+  const [editedComment, setEditedComment] = useState("");
 
   const handleHighlight = () => {
     const selection = window.getSelection();
@@ -33,6 +35,26 @@ const Annotations = () => {
         } catch (error) {
           console.error("Error adding annotation:", error);
         }
+      }
+    }
+  };
+
+  const handleEditAnnotation = (annotation) => {
+    setEditingAnnotationId(annotation.id);
+    setEditedComment(annotation.comment);
+  };
+
+  const handleSaveEdit = async () => {
+    if (editingAnnotationId) {
+      try {
+        const annotationRef = doc(db, "annotations", editingAnnotationId);
+        await updateDoc(annotationRef, {
+          comment: editedComment,
+        });
+        setEditingAnnotationId(null);
+        setEditedComment("");
+      } catch (error) {
+        console.error("Error updating annotation:", error);
       }
     }
   };
@@ -73,7 +95,23 @@ const Annotations = () => {
         <ul>
           {annotations.map((annotation) => (
             <li key={annotation.id}>
-              <strong>"{annotation.text}"</strong>: {annotation.comment}
+              <strong>"{annotation.text}"</strong>:{" "}
+              {editingAnnotationId === annotation.id ? (
+                <input
+                  type="text"
+                  value={editedComment}
+                  onChange={(e) => setEditedComment(e.target.value)}
+                />
+              ) : (
+                annotation.comment
+              )}
+              {editingAnnotationId === annotation.id ? (
+                <button onClick={handleSaveEdit}>Save</button>
+              ) : (
+                <button onClick={() => handleEditAnnotation(annotation)}>
+                  Edit
+                </button>
+              )}
             </li>
           ))}
         </ul>
