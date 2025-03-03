@@ -9,7 +9,7 @@ import {
   onSnapshot,
   doc,
   updateDoc,
-  deleteDoc, // Add this
+  deleteDoc,
 } from "firebase/firestore";
 
 const Annotations = () => {
@@ -34,10 +34,13 @@ const Annotations = () => {
       const comment = prompt("Add a comment for the highlighted text:");
       if (comment) {
         try {
+          // Detect mentions in the comment
+          const mentions = comment.match(/@\w+/g) || [];
           await addDoc(collection(db, "annotations"), {
             text: selectedText,
             comment,
             userId: auth.currentUser.uid,
+            mentions, // Store mentions
             createdAt: new Date(),
           });
           setSelectedText("");
@@ -57,8 +60,11 @@ const Annotations = () => {
     if (editingAnnotationId) {
       try {
         const annotationRef = doc(db, "annotations", editingAnnotationId);
+        // Detect mentions in the edited comment
+        const mentions = editedComment.match(/@\w+/g) || [];
         await updateDoc(annotationRef, {
           comment: editedComment,
+          mentions, // Update mentions
         });
         setEditingAnnotationId(null);
         setEditedComment("");
@@ -94,6 +100,18 @@ const Annotations = () => {
     }
   }, [auth.currentUser]);
 
+  const renderCommentWithMentions = (comment) => {
+    return comment.split(/(@\w+)/g).map((part, index) =>
+      part.startsWith("@") ? (
+        <span key={index} style={{ color: "blue", fontWeight: "bold" }}>
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
   return (
     <div>
       <div
@@ -120,7 +138,7 @@ const Annotations = () => {
                   onChange={(e) => setEditedComment(e.target.value)}
                 />
               ) : (
-                annotation.comment
+                renderCommentWithMentions(annotation.comment)
               )}
               {editingAnnotationId === annotation.id ? (
                 <button onClick={handleSaveEdit}>Save</button>
