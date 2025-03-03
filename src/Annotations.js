@@ -1,7 +1,16 @@
 // src/Annotations.js
 import React, { useState, useEffect } from "react";
 import { db, auth } from "./firebase";
-import { collection, addDoc, query, where, onSnapshot, doc, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  query,
+  where,
+  onSnapshot,
+  doc,
+  updateDoc,
+  deleteDoc, // Add this
+} from "firebase/firestore";
 
 const Annotations = () => {
   const [annotations, setAnnotations] = useState([]);
@@ -59,6 +68,14 @@ const Annotations = () => {
     }
   };
 
+  const handleDeleteAnnotation = async (annotationId) => {
+    try {
+      await deleteDoc(doc(db, "annotations", annotationId));
+    } catch (error) {
+      console.error("Error deleting annotation:", error);
+    }
+  };
+
   useEffect(() => {
     if (auth.currentUser) {
       const q = query(
@@ -108,9 +125,14 @@ const Annotations = () => {
               {editingAnnotationId === annotation.id ? (
                 <button onClick={handleSaveEdit}>Save</button>
               ) : (
-                <button onClick={() => handleEditAnnotation(annotation)}>
-                  Edit
-                </button>
+                <>
+                  <button onClick={() => handleEditAnnotation(annotation)}>
+                    Edit
+                  </button>
+                  <button onClick={() => handleDeleteAnnotation(annotation.id)}>
+                    Delete
+                  </button>
+                </>
               )}
             </li>
           ))}
